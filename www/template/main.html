@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="x-ua-compatible" content="ie=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title></title>
+
+    <link rel="stylesheet" href="{{.Root}}/static/css/normalize.css" />
+    <link rel="stylesheet" href="{{.Root}}/static/css/main.css" />
+    <link rel="icon" href="{{.Root}}/static/img/favicon.png" />
+  </head>
+
+  <body>
+    <h1>Jump Database</h1>
+    <form action="{{.Root}}" method="GET">
+        <div>
+          <label for="q">Query:</label>
+          <input name="q" id="JumpQueryInput" value="{{.Query}}">
+        </div>
+        <div>
+          <button>Search</button>
+        </div>
+    </form>
+    <div>
+        {{range .Results}}
+            <p><a href="{{$.Root}}/file/{{.FileName}}">{{.Score}}: {{.FileName}}</a> {{range .FileTags}} {{.}} {{end}} </p>
+        {{end}}
+    </div>
+  </body>
+</html>
