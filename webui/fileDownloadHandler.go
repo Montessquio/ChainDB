@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"net/url"
 
-	"../backend"
+	"github.com/Montessquio/ChainDB/backend"
 
 	log "github.com/sirupsen/logrus"
 )

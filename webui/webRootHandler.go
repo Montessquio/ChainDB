@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"sort"
 	log "github.com/sirupsen/logrus"
-	"../backend"
+	"github.com/Montessquio/ChainDB/backend"
 )
 
 // SiteData contains the data that is substituted into templates.

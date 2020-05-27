@@ -5,8 +5,8 @@ import (
     "sync"
     "time"
 
-    "./webui"
-    "./backend"
+    "github.com/Montessquio/ChainDB/webui"
+    "github.com/Montessquio/ChainDB/backend"
 
     log "github.com/sirupsen/logrus"
     
