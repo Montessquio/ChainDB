@@ -90,7 +90,7 @@ The built executable should be found in the project root.
 ChainDB needs two CLI arguments at minimum to run:
 
 ```plaintext
-ChainDB -d <data to store uploaded Files> -e <ElasticSearch Server URL>
+ChainDB -d <directory to store uploaded files> -e <ElasticSearch Server URL>
 ```
 
 More configuration options can be found using `ChainDB -h`:
