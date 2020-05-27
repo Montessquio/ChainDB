@@ -137,11 +137,34 @@ func Search(query string) ([]SearchResult, error) {
 
 	// Construct the request body.
 	// This runs the query through a search in the name and tags fields.
+	buf, err := createQueryJSON(query)
+	if err != nil {
+		return nil, err
+	}
+
+	// Perform the search request.
+	res, err := performQuery(buf)
+	if err != nil {
+		return nil, err
+	}
+	defer res.Body.Close()
+
+	// Decode and return response JSON (or any errors)
+	return parseQueryResponse(res)
+}
+
+// Creates a JSON string, ready to pass to an ES Query.
+// This is currently non-functional. The query construction
+// process must be carefully refactored to produce better
+// search results.
+func createQueryJSON(query ...string) (bytes.Buffer, error) {
+	// Construct the request body.
+	// This runs the query through a search in the name and tags fields.
 	var buf bytes.Buffer
 	esQuery := map[string]interface{}{
 	  	"query": map[string]interface{}{
 			"multi_match": map[string]interface{}{
-				"query": 	html.UnescapeString(query),
+				"query": 	html.UnescapeString(query[0]),
 				"type": 	"best_fields",
 		  		"fields": 	[]string{"name", "tags"},
 			},
@@ -149,9 +172,14 @@ func Search(query string) ([]SearchResult, error) {
 		  "size": 	25,
 	}
 	if err := json.NewEncoder(&buf).Encode(esQuery); err != nil {
-		return nil, fmt.Errorf("Error encoding query: %s", err)
+		return bytes.Buffer{}, fmt.Errorf("Error encoding query: %s", err)
 	}
+	return buf, nil
+}
 
+// Performs a search request for a document based on the
+// request in buf, and checks for any errors down the line.
+func performQuery(buf bytes.Buffer) (*esapi.Response, error) {
 	// Perform the search request.
 	res, err := client.Search(
 		client.Search.WithContext(context.Background()),
@@ -161,15 +189,14 @@ func Search(query string) ([]SearchResult, error) {
 		client.Search.WithPretty(),
 	)
 	if err != nil {
-		return nil, fmt.Errorf("Error getting response: %s", err)
+		return nil, fmt.Errorf("Error performing ES Search: %s", err)
 	}
-	defer res.Body.Close()
 
 	// Check if ElasticSearch returned an error
 	if res.IsError() {
 		var e map[string]interface{}
 		if err := json.NewDecoder(res.Body).Decode(&e); err != nil {
-			return nil, fmt.Errorf("Error parsing the response body: %s", err)
+			return nil, fmt.Errorf("Error parsing the error response body: %s", err)
 		}
 		// Print the response status and error information.
 		return nil, fmt.Errorf("[%s] %s: %s",
@@ -179,7 +206,12 @@ func Search(query string) ([]SearchResult, error) {
 		)
 	}
 
-	// Decode the response JSON
+	return res, nil
+}
+
+// Converts the ElasticSearch raw JSON response into a SearchResult slice,
+// ready for use in the HTML Template Engine.
+func parseQueryResponse(res *esapi.Response) ([]SearchResult, error) {
 	var r map[string]interface{}
 	if err := json.NewDecoder(res.Body).Decode(&r); err != nil {
 		return nil, fmt.Errorf("Error parsing the response body: %s", err)
