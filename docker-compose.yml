@@ -1,0 +1,24 @@
+version: "2.1"
+networks:
+  internal_network:
+services:       
+  es:
+    restart: always
+    networks:
+      - internal_network
+    image: elasticsearch
+    expose:
+      - "9200" 
+    volumes:
+      - esdata:/usr/share/elasticsearch/data
+  frontend:
+    image: montessquio/ChainDB
+    restart: always
+    networks:
+      - internal_network
+    ports:
+      - "80:80"
+    environment:
+      - ES_URL="http://es:9200"
+    volumes:
+      - data:/chain_data
