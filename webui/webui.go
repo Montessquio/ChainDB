@@ -4,15 +4,15 @@ Package webui presents a pretty web UI to search, upload and download to/from th
 package webui
 
 import (
-	"sync"
 	"net/http"
 	"net/url"
 	"path"
+	"sync"
 
 	"strconv"
 
 	log "github.com/sirupsen/logrus"
-    //"github.com/gorilla/securecookie"
+	//"github.com/gorilla/securecookie"
 )
 
 var basePath string
@@ -59,6 +59,10 @@ func Serve(port int, bAddr string, bPath string, wg *sync.WaitGroup) {
 
 // Function to easily and safely prepend the base path to a given URL path.
 func setpath(p string) string {
+	if basePath == "" {
+		return p
+	}
+	
 	u, err := url.Parse(basePath)
 	if err != nil {
 		log.WithFields(log.Fields{

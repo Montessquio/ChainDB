@@ -4,13 +4,13 @@ Package backend is the ElasticSearch backend manager and file retreival system.
 package backend
 
 import (
-	"fmt"
+	"bytes"
 	"context"
 	"encoding/base64"
 	"encoding/json"
-	"strings"
-	"bytes"
+	"fmt"
 	"html"
+	"strings"
 
 	elasticsearch "github.com/elastic/go-elasticsearch"
 	esapi "github.com/elastic/go-elasticsearch/esapi"

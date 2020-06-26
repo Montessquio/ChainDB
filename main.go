@@ -1,16 +1,14 @@
 package main
 
 import (
-    "os"
-    "sync"
-    "time"
+	"os"
+	"sync"
+	"time"
 
-    "github.com/Montessquio/ChainDB/webui"
-    "github.com/Montessquio/ChainDB/backend"
+	"github.com/Montessquio/ChainDB/backend"
+	"github.com/Montessquio/ChainDB/webui"
 
-    log "github.com/sirupsen/logrus"
-    
-
+	log "github.com/sirupsen/logrus"
 )
 
 func main() {
@@ -18,7 +16,7 @@ func main() {
 	log.SetOutput(os.Stdout)
     log.SetLevel(log.DebugLevel)
     
-    log.Info("Strike the Earth!")
+    log.Debug("Strike the Earth!")
 
     config := getCliArgs()
 
