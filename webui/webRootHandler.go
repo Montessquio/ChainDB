@@ -3,8 +3,9 @@ package webui
 import (
 	"net/http"
 	"sort"
-	log "github.com/sirupsen/logrus"
+
 	"github.com/Montessquio/ChainDB/backend"
+	log "github.com/sirupsen/logrus"
 )
 
 // SiteData contains the data that is substituted into templates.

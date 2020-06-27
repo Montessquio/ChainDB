@@ -2,22 +2,33 @@ html {
   padding-left: 1em;
   padding-right: 1em;
   background-color: #D0D0D0;
+  overflow-x: hidden;
 }
 
 .title {
     text-align: center;
 }
 
+.title a {
+  color: white;
+  text-decoration: none;
+}
+
 .header {
-  
   background-image: linear-gradient(#2DC0ED, rgb(48, 157, 190));
   color: white;
-  width: 98.1vw;
+  width: 100vw;
   margin-left: -1em;
 }
 
+@media screen and (min-width:80em) {
+  .ResultList {
+    margin: 0 auto;
+    width: 33.33%;
+  }
+}
+
 .ResultItemContainer {
-  position: relative;
   background-color: white;
   box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
   transition: 0.3s;
@@ -31,10 +42,18 @@ html {
 }
 
 .ResultItemTextContainer {
-  margin-left: 20%;
-  position: absolute;
   top: 40%;
-  transform: translateY(-50%);
+}
+
+@media screen and (max-width:32em) {
+  .ResultItemTextContainer {
+    margin-left: 0;
+  }
+}
+@media screen and (min-width:32.1em) {
+  .ResultItemTextContainer {
+    float: left;
+  }
 }
 
 .FileName a {
@@ -57,10 +76,15 @@ html {
   font-size: 60%;
 }
 
+.ThumbnailContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 .PDFThumbnail {
-  height: 90%;
-  padding: 10px 20px 10px 40px;
-  margin: 10px;
+  height: 100%;
+  width: 100%;
   cursor: pointer;
 }
 
