@@ -24,12 +24,12 @@ Deploying with Docker is as simple as pulling and running the image.
 You must already have an elasticsearch server running ([https://www.elastic.co/](https://www.elastic.co/)).
 
 ```bash
-docker pull montessquio/ChainDB
+docker pull montessquio/chaindb
 
 docker run -d -p 80:80 \
 -v HOST/DATA/PATH:/chain_data \
 -e ES_URL="http://<elastic_url>:9200" \
---name chainDB montessquio/ChainDB
+--name chainDB montessquio/chaindb
 ```
 
 The following environment variables are available:
@@ -37,6 +37,8 @@ The following environment variables are available:
 - `ES_URL` - The URL of the ElasticSearch database. Passed to the `-e` CLI Flag.
 - `DOMAIN` - The domain that this utility is served under. Valid values include 192.168.2.1:80, app.example.net, and example.net. Passed to the `-r` CLI Flag.
 - `ROOT` - The subdirectory of the domain this utility will be served under. If this is set to "db" then the page found normally at example.com/a.html will instead be found at example.com/db/a.html. Passed to the `-s` CLI Flag.
+
+The volume `/chain_data` will be the volume that contains ingested PDFs.
 
 ## Deploy with Docker-Compose
 

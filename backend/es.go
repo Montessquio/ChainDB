@@ -14,6 +14,7 @@ import (
 
 	elasticsearch "github.com/elastic/go-elasticsearch"
 	esapi "github.com/elastic/go-elasticsearch/esapi"
+	log "github.com/sirupsen/logrus"
 )
 
 var client *elasticsearch.Client;
@@ -24,7 +25,7 @@ func InitES(URL string) (string, error) {
 	cfg := elasticsearch.Config {
 		Addresses: []string{
 			URL,
-		  },
+		},
 	}
 	es, err := elasticsearch.NewClient(cfg)
 	if err != nil {
@@ -36,6 +37,11 @@ func InitES(URL string) (string, error) {
 	if err != nil {
 	   return "", fmt.Errorf("Error getting response: %s", err.Error())
 	}
+
+	err = initIndex()
+	if err != nil {
+		return "", fmt.Errorf("Error Initializing Index: %s", err.Error())
+	}
 	
 	defer res.Body.Close()
 	return fmt.Sprintf("%+v", res), nil
@@ -44,6 +50,75 @@ func InitES(URL string) (string, error) {
 type dbRecord struct {
 	Name string `json:"name"`
 	Tags []string `json:"tags"`
+}
+
+// Creates the index if it doesn't exist.
+func initIndex() error {
+	// Create index if it doesn't exist.
+	req := 
+	esapi.IndicesCreateRequest{
+		Index: "documents",
+		Body: strings.NewReader(`{
+			"settings": {
+				"max_ngram_diff": 8,
+				"analysis": {
+					"analyzer": {
+					  "pdf_analyzer": {
+						"type": "custom",
+						"tokenizer": "pdf_ngram_tokenizer",
+						"filter": [
+						  "pdf_ngram_filter"
+						]
+					  }
+					},
+					"filter": {
+					  "pdf_ngram_filter": {
+						"type": "ngram",
+						"min_gram": 2,
+						"max_gram": 8
+					  }
+					},
+					"tokenizer": {
+					  "pdf_ngram_tokenizer": {
+						"type": "ngram",
+						"min_gram": 2,
+						"max_gram": 8
+					  }
+					}
+				}
+			}
+		}`),
+	}
+
+	// Actually perform the request.
+	res, err := req.Do(context.Background(), client)
+	if err != nil {
+		return fmt.Errorf("Error performing ESAPI index request: %s", err.Error())
+	}
+	defer res.Body.Close()
+
+	// This means it either already exists, or something else happened.
+	if res.IsError() {
+		var r map[string]interface{}
+		if err := json.NewDecoder(res.Body).Decode(&r); err != nil {
+			return fmt.Errorf("Error parsing the response body: %s", err.Error())
+		}
+
+		// This horrible thing extracts some VERY deeply nested JSON, to find which exception was raised by the
+		// ES query that attempted to create the index.
+		// If the exeption was that the index already exists, we can safely continue.
+		// Otherwise, we send the entire response body back as an error.
+		if r["error"].(map[string]interface{})["root_cause"].([]interface{})[0].(map[string]interface{})["type"].(string) == "resource_already_exists_exception" {
+			log.Info("Index `documents` already exists. Continuing...")
+			return nil
+		}
+		buf := new(bytes.Buffer)
+		buf.ReadFrom(res.Body)
+		return fmt.Errorf("Got Response Error from ES Database: %s, %s", res.Status(), buf.String())
+	}
+
+	log.Warn("Created new Index")
+	return nil
 }
 
 // UpdateRecord modifies the tags associated with a particular filename in the ES database.

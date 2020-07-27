@@ -19,7 +19,6 @@ func main() {
     log.Debug("Strike the Earth!")
 
     config := getCliArgs()
-
     log.WithField("data", config).Debug("CLI Arguments Processed")
 
     var wg sync.WaitGroup

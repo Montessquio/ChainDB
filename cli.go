@@ -6,12 +6,13 @@ Parse and validate command-line flags.
 package main
 
 import (
-	log "github.com/sirupsen/logrus"
 	"flag"
+	"net/url"
 	"os"
 	"path"
 	"strconv"
-	"net/url"
+
+	log "github.com/sirupsen/logrus"
 )
 
 type cliArgs struct {
